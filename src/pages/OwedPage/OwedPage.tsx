@@ -7,7 +7,7 @@ import { useGuard } from '@/utils/hooks/useGuard';
 import { useAuthHeader } from '@/utils/hooks/useAuthHeader';
 
 interface Employee {
-    worked: string;
+    worker: string;
     address: string;
     owed: number;
 }
