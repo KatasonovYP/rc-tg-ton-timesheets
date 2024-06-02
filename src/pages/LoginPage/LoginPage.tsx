@@ -22,7 +22,7 @@ export const LoginPage: FC = () => {
     async function onAction(data: LoginPageValues) {
         console.log(data);
         try {
-            const response = axios.post('w3id.io:33333/api/token/', data);
+            const response = axios.post('http://w3id.io:33333/api/token/', data);
             console.log(response);
             setToken('23');
         } catch (error) {
