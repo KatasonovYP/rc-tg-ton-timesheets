@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from "react"
-import {Section, Select, Button, Placeholder } from '@telegram-apps/telegram-ui';
+import { Section, Select, Button, Placeholder, Textarea } from '@telegram-apps/telegram-ui';
 import { useStore } from "@/store/store";
 import { useGuard } from "@/utils/hooks/useGuard";
 import axios from "axios";
@@ -19,6 +19,8 @@ export const TimerPage: FC = () => {
     const headers = useAuthHeader();
     const [projects, setProjects] = useState<Project[]>();
     const [project, setProject] = useState<number>();
+    const [summary, setSummary] = useState<string>('');
+    const [loading, setLoading] = useState(false);
 
     async function getProjects() {
         try {
@@ -39,6 +41,7 @@ export const TimerPage: FC = () => {
 
     useGuard();
     async function startWork() {
+        setLoading(true);
         try {
             console.log(projects);
             const response = await axios.post(
@@ -47,33 +50,66 @@ export const TimerPage: FC = () => {
                 headers
             );
             console.log(response.data);
-            setRecordId(response.data.recordId);
+            setRecordId(response.data.record);
         } catch (error) {
             console.error(error);
+        } finally {
+            setLoading(false);
         }
     }
 
-    async function endWork(id: string) {
+    async function stopWork(id: string) {
+        setLoading(true);
         try {
-            await axios.post(`${BACKEND_ORIGIN}/end-work/${id}/`, {}, headers);
+            await axios.post(
+                `${BACKEND_ORIGIN}/stop-work/${id}/`,
+                { summary },
+                headers);
             setRecordId(undefined);
+            setSummary('');
         } catch (error) {
             console.error(error);
+        } finally {
+            setLoading(false);
         }
     }
 
     return (
         <Section header='You can pick a project and get to work'>
-            <Select header="project" onChange={(e) => setProject(+e.target.value)}>
-                <option value={undefined} key={0}>---</option>
-                {projects?.map((project, id) => (<option value={project.id} key={id}>{project.name}</option>))}
-            </Select>
-        <Placeholder>
             {recordId
-                ? <Button onClick={() => endWork(recordId)}>End Work</Button>
-                : <Button onClick={startWork} disabled={!project}>Start Work</Button>
+                ? <Textarea
+                    placeholder="summary"
+                    onChange={(e) => setSummary(e.target.value)}
+                />
+                : <Select
+                    header="project"
+                    onChange={(e) => setProject(+e.target.value)}
+                >
+                    <option value={undefined} key={'empty'}>---</option>
+                    {projects?.map((project, id) => (
+                        <option value={project.id} key={id}>{project.name}</option>
+                    ))}
+                </Select>
             }
-        </Placeholder>
+
+            <Placeholder>
+                {recordId
+                    ? <Button
+                        loading={loading}
+                        onClick={() => stopWork(recordId)}
+                        disabled={!summary}
+                    >
+                        Stop Work
+                    </Button>
+                    : <Button
+                        loading={loading}
+                        onClick={startWork}
+                        disabled={!project}
+                    >
+                        Start Work
+                    </Button>
+                }
+            </Placeholder>
         </Section>
     )
 }

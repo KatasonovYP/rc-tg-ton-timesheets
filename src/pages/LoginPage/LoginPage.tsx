@@ -1,6 +1,6 @@
 import { Section, Input, Button, Placeholder } from '@telegram-apps/telegram-ui';
 import type { FC } from 'react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import axios from 'axios';
 import { useStore } from '@/store/store'
@@ -19,6 +19,7 @@ export const LoginPage: FC = () => {
     const setUsername = useStore(state => state.setUsername);
     const setEmail = useStore(state => state.setEmail);
     const navigate = useNavigate();
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         register("username", { required: true })
@@ -26,6 +27,7 @@ export const LoginPage: FC = () => {
     }, [])
 
     async function onAction(data: LoginPageValues) {
+        setLoading(true)
         try {
             const response = await axios.post(`${BACKEND_ORIGIN}/token/`, data);
             setToken(response.data.token);
@@ -34,6 +36,8 @@ export const LoginPage: FC = () => {
             navigate('/');
         } catch (error) {
             console.error(error);
+        } finally {
+            setLoading(false);
         }
     }
 
@@ -59,6 +63,7 @@ export const LoginPage: FC = () => {
                         type='submit'
                         size={'m'}
                         stretched
+                        loading={loading}
                     >
                         login
                     </Button>
