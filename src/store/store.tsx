@@ -8,7 +8,7 @@ interface StoreValues {
 
 export const useStore = create(
     persist<StoreValues>(
-        (set, get) => ({
+        (set) => ({
             token: '',
             setToken: (token) => set({ token }),
         }),
