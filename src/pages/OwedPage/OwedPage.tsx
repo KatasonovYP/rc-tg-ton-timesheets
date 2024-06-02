@@ -34,6 +34,7 @@ export const OwedPage: FC = () => {
         }
     }
 
+
     useEffect(() => {
         getOwed()
     }, [])

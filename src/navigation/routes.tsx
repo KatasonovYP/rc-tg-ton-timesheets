@@ -9,6 +9,7 @@ import { LoginPage } from '@/pages/LoginPage/LoginPage';
 import { OwedPage } from '@/pages/OwedPage/OwedPage';
 import { ProfilePage } from '@/pages/ProfilePage/ProfilePage';
 import { TimerPage } from '@/pages/TimerPage/TimerPage';
+import { BalancePage } from '@/pages/BalancePage/BalancePage';
 
 interface Route {
   path: string;
@@ -25,6 +26,7 @@ export const routes: Route[] = [
   { path: '/auth/login', Component: LoginPage, title: 'Login to your account' },
   { path: '/owed', Component: OwedPage, title: 'List of owed' },
   { path: '/profile', Component: ProfilePage, title: 'Profile' },
+  { path: '/balance', Component: BalancePage, title: 'Balance' },
   { path: '/timer', Component: TimerPage, title: 'Timer' },
   {
     path: '/ton-connect',

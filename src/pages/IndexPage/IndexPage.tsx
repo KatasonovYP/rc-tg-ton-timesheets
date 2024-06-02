@@ -11,43 +11,53 @@ import { useStore } from '@/store/store';
 interface Tab {
   to: string;
   title: string;
-  subtle: string;
+  subtitle: string;
+  isAuth?: boolean;
+  isStaff?: boolean;
 }
 
-const protectedTabs: Tab[] = [
+const tabs: Tab[] = [
   {
-    to: '/profile',
-    title: 'Profile',
-    subtle: 'Check your profile',
-  },
-  {
-    to: '/owed',
-    title: 'Owed',
-    subtle: 'list of owed',
+    to: '/auth/login',
+    title: 'Auth',
+    subtitle: 'timesheets login',
+    isAuth: false,
   },
   {
     to: '/timer',
     title: 'Timer',
-    subtle: "Let's get to work!",
-  },
-]
-
-const publicTabs: Tab[] = [
-  {
-    to: '/auth/login',
-    title: 'Auth',
-    subtle: 'timesheets login',
+    subtitle: "Let's get to work!",
+    isAuth: true,
   },
   {
-    to: '/init-data',
-    title: 'User data, chat information, technical data',
-    subtle: 'Init Data',
+    to: '/owed',
+    title: 'Owed',
+    subtitle: 'list of owed',
+    isAuth: true,
+    isStaff: true,
   },
+  {
+    to: '/balance',
+    title: 'Balance',
+    subtitle: 'Check your balance',
+    isAuth: true,
+  },
+  {
+    to: '/profile',
+    title: 'Profile',
+    subtitle: 'Check your profile',
+    isAuth: true,
+  },
+  // {
+  //   to: '/init-data',
+  //   title: 'User data, chat information, technical data',
+  //   subtitle: 'Init Data',
+  // },
 ]
 
 export const IndexPage: FC = () => {
   const isAuth = useStore(state => state.isAuth);
-  const tabs = isAuth() ? protectedTabs : publicTabs;
+  const isStaff = useStore(state => state.isStaff);
   return (
     <List>
       <Section
@@ -67,10 +77,20 @@ export const IndexPage: FC = () => {
         header='Application Launch Data'
         footer='vidicode (c) 2024'
       >
-        {tabs.map(({ to, title, subtle }, id) => (
-          <Link key={id} to={to}>
-            <Cell subtitle={subtle}>{title}</Cell>
-          </Link>))
+        {tabs.map((tab, id) => {
+          if (tab.isAuth !== undefined && isAuth() !== tab.isAuth) {
+            return null;
+          }
+          if (tab.isStaff !== undefined && isStaff() !== tab.isStaff) {
+            return null;
+          }
+
+          return (
+            <Link key={id} to={tab.to}>
+              <Cell subtitle={tab.subtitle}>{tab.title}</Cell>
+            </Link>
+          )
+        })
         }
         {/* <Link to='/launch-params'>
           <Cell subtitle='Platform identifier, Mini Apps version, etc.'>Launch Parameters</Cell>
