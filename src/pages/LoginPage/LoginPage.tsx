@@ -1,9 +1,12 @@
-import { Section, Input, Button } from '@telegram-apps/telegram-ui';
+import { Section, Input, Button, Placeholder } from '@telegram-apps/telegram-ui';
 import type { FC } from 'react';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import axios from 'axios';
-import {useStore} from '@/store/store'
+import { useStore } from '@/store/store'
+import { BACKEND_ORIGIN } from '@/config/const';
+import { useNavigate } from 'react-router-dom';
+import cls from './LoginPage.module.css';
 
 interface LoginPageValues {
     username: string;
@@ -13,6 +16,9 @@ interface LoginPageValues {
 export const LoginPage: FC = () => {
     const { register, handleSubmit, setValue } = useForm<LoginPageValues>();
     const setToken = useStore(state => state.setToken);
+    const setUsername = useStore(state => state.setUsername);
+    const setEmail = useStore(state => state.setEmail);
+    const navigate = useNavigate();
 
     useEffect(() => {
         register("username", { required: true })
@@ -20,19 +26,20 @@ export const LoginPage: FC = () => {
     }, [])
 
     async function onAction(data: LoginPageValues) {
-        console.log(data);
         try {
-            const response = axios.post('http://w3id.io:33333/api/token/', data);
-            console.log(response);
-            setToken('23');
+            const response = await axios.post(`${BACKEND_ORIGIN}/token/`, data);
+            setToken(response.data.token);
+            setUsername(response.data.username);
+            setEmail(data.username);
+            navigate('/');
         } catch (error) {
             console.error(error);
         }
     }
 
     return (
-        <Section>
-            <form onSubmit={handleSubmit(onAction)}>
+        <form onSubmit={handleSubmit(onAction)} className={cls.form}>
+            <Section header='enter login and password for w3id.io'>
                 <Input
                     placeholder='username'
                     name="username"
@@ -47,8 +54,18 @@ export const LoginPage: FC = () => {
                         setValue("password", event.target.value)
                     }}
                 />
-                <Button type='submit'>login</Button>
-            </form>
-        </Section>
+                <Placeholder>
+                    <Button
+                        type='submit'
+                        size={'m'}
+                        stretched
+                    >
+                        login
+                    </Button>
+                </Placeholder>
+            </Section>
+
+
+        </form>
     )
 }

@@ -1,0 +1,1 @@
+export const BACKEND_ORIGIN = 'https://api.w3id.io/api';

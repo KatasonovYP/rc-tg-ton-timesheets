@@ -1,101 +1,96 @@
-import { type FC, useMemo } from 'react';
-import { useInitData, useLaunchParams, type User } from '@tma.js/sdk-react';
-import { List, Placeholder } from '@telegram-apps/telegram-ui';
+import { useEffect, useState, type FC } from 'react';
+import { List, Section, Cell, Spinner, Placeholder } from '@telegram-apps/telegram-ui';
 
-import { DisplayData, type DisplayDataRow } from '@/components/DisplayData/DisplayData.tsx';
+import axios from 'axios';
+import { BACKEND_ORIGIN } from '@/config/const';
+import { useGuard } from '@/utils/hooks/useGuard';
+import { useAuthHeader } from '@/utils/hooks/useAuthHeader';
 
-import './InitDataPage.css';
-
-function getUserRows(user: User): DisplayDataRow[] {
-  return [
-    { title: 'id', value: user.id.toString() },
-    { title: 'username', value: user.username },
-    { title: 'photo_url', value: user.photoUrl },
-    { title: 'last_name', value: user.lastName },
-    { title: 'first_name', value: user.firstName },
-    { title: 'is_bot', value: user.isBot },
-    { title: 'is_premium', value: user.isPremium },
-    { title: 'language_code', value: user.languageCode },
-    { title: 'allows_to_write_to_pm', value: user.allowsWriteToPm },
-    { title: 'added_to_attachment_menu', value: user.addedToAttachmentMenu },
-  ];
+interface Employee {
+    worked: string;
+    address: string;
+    owed: number;
 }
 
+// const mockOwed = [
+//     { worked: 'Yanee', address: '123', owed: 123 },
+//     { worked: 'Yury', address: '345', owed: 345 },
+//     { worked: 'Eugene', address: '567', owed: 45 },
+// ]
+
 export const OwedPage: FC = () => {
-  const initDataRaw = useLaunchParams().initDataRaw;
-  const initData = useInitData();
+    const [owed, setOwed] = useState<Employee[]>();
+    useGuard();
+    const headers = useAuthHeader();
 
-  const initDataRows = useMemo<DisplayDataRow[] | undefined>(() => {
-    if (!initData || !initDataRaw) {
-      return;
+    async function getOwed() {
+        try {
+            const response = await axios.get(`${BACKEND_ORIGIN}/owed/`, headers)
+            console.log(response.data);
+            setOwed(response.data);
+            // setOwed(mockOwed);
+        } catch (error) {
+            console.error(error);
+        }
     }
-    const {
-      hash,
-      queryId,
-      chatType,
-      chatInstance,
-      authDate,
-      startParam,
-      canSendAfter,
-      canSendAfterDate,
-    } = initData;
-    return [
-      { title: 'raw', value: initDataRaw },
-      { title: 'auth_date', value: authDate.toLocaleString() },
-      { title: 'auth_date (raw)', value: authDate.getTime() / 1000 },
-      { title: 'hash', value: hash },
-      { title: 'can_send_after', value: canSendAfterDate?.toISOString() },
-      { title: 'can_send_after (raw)', value: canSendAfter },
-      { title: 'query_id', value: queryId },
-      { title: 'start_param', value: startParam },
-      { title: 'chat_type', value: chatType },
-      { title: 'chat_instance', value: chatInstance },
-    ];
-  }, [initData, initDataRaw]);
 
-  const userRows = useMemo<DisplayDataRow[] | undefined>(() => {
-    return initData && initData.user ? getUserRows(initData.user) : undefined;
-  }, [initData]);
+    useEffect(() => {
+        getOwed()
+    }, [])
 
-  const receiverRows = useMemo<DisplayDataRow[] | undefined>(() => {
-    return initData && initData.receiver ? getUserRows(initData.receiver) : undefined;
-  }, [initData]);
-
-  const chatRows = useMemo<DisplayDataRow[] | undefined>(() => {
-    if (!initData?.chat) {
-      return;
+    if (owed === undefined) {
+        return (
+            <Placeholder>
+                <Spinner size={'l'} />
+            </Placeholder>
+        )
     }
-    const { id, title, type, username, photoUrl } = initData.chat;
 
-    return [
-      { title: 'id', value: id.toString() },
-      { title: 'title', value: title },
-      { title: 'type', value: type },
-      { title: 'username', value: username },
-      { title: 'photo_url', value: photoUrl },
-    ];
-  }, [initData]);
+    if (owed.length === 0) {
+        return (
+            <div>
+                <Placeholder
+                    description="Add some at your profile"
+                    header="No employees"
+                >
+                    <img
+                        alt="Telegram sticker"
+                        width={'128'}
+                        src="https://xelene.me/telegram.gif"
+                    />
+                </Placeholder>
+            </div>
+        )
+    }
 
-  if (!initDataRows) {
     return (
-      <Placeholder
-        header="Oops"
-        description="Application was launched with missing init data"
-      >
-        <img
-          alt="Telegram sticker"
-          src="https://xelene.me/telegram.gif"
-          style={{ display: 'block', width: '144px', height: '144px' }}
-        />
-      </Placeholder>
+        <List>
+            {owed.map((employee, idx) => (
+                <Section header={employee.worked}>
+                    <Cell
+                        className='display-data__line'
+                        subhead={'address'}
+                        readOnly
+                        multiline={true}
+                        key={idx}
+                    >
+                        <span className='display-data__line-value'>
+                            {employee.address}
+                        </span>
+                    </Cell>
+                    <Cell
+                        className='display-data__line'
+                        subhead={'owed'}
+                        readOnly
+                        multiline={true}
+                        key={idx}
+                    >
+                        <span className='display-data__line-value'>
+                            {employee.owed}
+                        </span>
+                    </Cell>
+                </Section>
+            ))}
+        </List>
     )
-  }
-  return (
-    <List>
-      <DisplayData header={'Init Data'} rows={initDataRows}/>
-      {userRows && <DisplayData header={'User'} rows={userRows}/>}
-      {receiverRows && <DisplayData header={'Receiver'} rows={receiverRows}/>}
-      {chatRows && <DisplayData header={'Chat'} rows={chatRows}/>}
-    </List>
-  )
 };

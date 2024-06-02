@@ -6,6 +6,9 @@ import { LaunchParamsPage } from '@/pages/LaunchParamsPage/LaunchParamsPage.tsx'
 import { ThemeParamsPage } from '@/pages/ThemeParamsPage/ThemeParamsPage.tsx';
 import { TONConnectPage } from '@/pages/TONConnectPage/TONConnectPage';
 import { LoginPage } from '@/pages/LoginPage/LoginPage';
+import { OwedPage } from '@/pages/OwedPage/OwedPage';
+import { ProfilePage } from '@/pages/ProfilePage/ProfilePage';
+import { TimerPage } from '@/pages/TimerPage/TimerPage';
 
 interface Route {
   path: string;
@@ -19,7 +22,10 @@ export const routes: Route[] = [
   { path: '/init-data', Component: InitDataPage, title: 'Init Data' },
   { path: '/theme-params', Component: ThemeParamsPage, title: 'Theme Params' },
   { path: '/launch-params', Component: LaunchParamsPage, title: 'Launch Params' },
-  { path: '/auth/login', Component: LoginPage, title: 'login page' },
+  { path: '/auth/login', Component: LoginPage, title: 'Login to your account' },
+  { path: '/owed', Component: OwedPage, title: 'List of owed' },
+  { path: '/profile', Component: ProfilePage, title: 'Profile' },
+  { path: '/timer', Component: TimerPage, title: 'Timer' },
   {
     path: '/ton-connect',
     Component: TONConnectPage,

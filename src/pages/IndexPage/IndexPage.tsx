@@ -6,8 +6,48 @@ import { Link } from '@/components/Link/Link.tsx';
 import tonSvg from './ton.svg';
 
 import './IndexPage.css';
+import { useStore } from '@/store/store';
+
+interface Tab {
+  to: string;
+  title: string;
+  subtle: string;
+}
+
+const protectedTabs: Tab[] = [
+  {
+    to: '/profile',
+    title: 'Profile',
+    subtle: 'Check your profile',
+  },
+  {
+    to: '/owed',
+    title: 'Owed',
+    subtle: 'list of owed',
+  },
+  {
+    to: '/timer',
+    title: 'Timer',
+    subtle: "Let's get to work!",
+  },
+]
+
+const publicTabs: Tab[] = [
+  {
+    to: '/auth/login',
+    title: 'Auth',
+    subtle: 'timesheets login',
+  },
+  {
+    to: '/init-data',
+    title: 'User data, chat information, technical data',
+    subtle: 'Init Data',
+  },
+]
 
 export const IndexPage: FC = () => {
+  const isAuth = useStore(state => state.isAuth);
+  const tabs = isAuth() ? protectedTabs : publicTabs;
   return (
     <List>
       <Section
@@ -16,7 +56,7 @@ export const IndexPage: FC = () => {
       >
         <Link to='/ton-connect'>
           <Cell
-            before={<Image src={tonSvg} style={{ backgroundColor: '#007AFF' }}/>}
+            before={<Image src={tonSvg} style={{ backgroundColor: '#007AFF' }} />}
             subtitle='Connect your TON wallet'
           >
             TON Connect
@@ -27,12 +67,11 @@ export const IndexPage: FC = () => {
         header='Application Launch Data'
         footer='vidicode (c) 2024'
       >
-        <Link to='/init-data'>
-          <Cell subtitle='User data, chat information, technical data'>Init Data</Cell>
-        </Link>
-        <Link to='/auth/login'>
-          <Cell subtitle='timesheets login'>Auth</Cell>
-        </Link>
+        {tabs.map(({ to, title, subtle }, id) => (
+          <Link key={id} to={to}>
+            <Cell subtitle={subtle}>{title}</Cell>
+          </Link>))
+        }
         {/* <Link to='/launch-params'>
           <Cell subtitle='Platform identifier, Mini Apps version, etc.'>Launch Parameters</Cell>
         </Link>

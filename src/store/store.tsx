@@ -3,14 +3,34 @@ import { persist, createJSONStorage } from 'zustand/middleware'
 
 interface StoreValues {
     token: string;
+    username?: string;
+    email?: string;
+
+    recordId?: string;
+    
     setToken: (token: string) => void;
+    setEmail: (email: string) => void;
+    setUsername: (username: string) => void;
+
+    setRecordId: (workId?: string) => void;
+
+    isStaff: () => boolean;
+    isAuth: () => boolean;
+    logout: () => void;
 }
 
 export const useStore = create(
     persist<StoreValues>(
-        (set) => ({
+        (set, get) => ({
             token: '',
             setToken: (token) => set({ token }),
+            setUsername: (username) => set({ username }),
+            setEmail: (email) => set({ email }),
+            setRecordId: (recordId) => set({ recordId }),
+
+            isAuth: () => !!get().token,
+            isStaff: () => get().email === 'admin@admin.com',
+            logout: () => get().setToken(''),
         }),
         {
             name: 'auth-storage', // name of the item in the storage (must be unique)
