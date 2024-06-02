@@ -54,6 +54,7 @@ export const LoginPage: FC = () => {
                 <Input
                     placeholder='password'
                     name="password"
+                    type='password'
                     onChange={(event) => {
                         setValue("password", event.target.value)
                     }}

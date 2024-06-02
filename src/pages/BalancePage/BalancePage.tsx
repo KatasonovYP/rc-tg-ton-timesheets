@@ -30,12 +30,12 @@ export const BalancePage: FC = () => {
     return (
         <Section header='Your Balance'>
             <Placeholder>
-                {!balance && (
+                {!!balance && (
                     <LargeTitle weight="1">
                         ${balance}
                     </LargeTitle>
                 )}
-                {!!balance && <Spinner size={"l"} />}
+                {!balance && <Spinner size={"l"} />}
             </Placeholder>
         </Section>
     )
