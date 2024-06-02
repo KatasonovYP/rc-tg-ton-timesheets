@@ -12,12 +12,6 @@ interface Employee {
     owed: number;
 }
 
-// const mockOwed = [
-//     { worked: 'Yanee', address: '123', owed: 123 },
-//     { worked: 'Yury', address: '345', owed: 345 },
-//     { worked: 'Eugene', address: '567', owed: 45 },
-// ]
-
 export const OwedPage: FC = () => {
     const [owed, setOwed] = useState<Employee[]>();
     useGuard();
@@ -66,14 +60,13 @@ export const OwedPage: FC = () => {
 
     return (
         <List>
-            {owed.map((employee, idx) => (
-                <Section header={employee.worked}>
+            {owed.map((employee, id) => (
+                <Section key={id} header={employee.worker}>
                     <Cell
                         className='display-data__line'
                         subhead={'address'}
                         readOnly
                         multiline={true}
-                        key={idx}
                     >
                         <span className='display-data__line-value'>
                             {employee.address}
@@ -84,10 +77,10 @@ export const OwedPage: FC = () => {
                         subhead={'owed'}
                         readOnly
                         multiline={true}
-                        key={idx}
+                        key={id}
                     >
                         <span className='display-data__line-value'>
-                            {employee.owed}
+                            ${employee.owed}
                         </span>
                     </Cell>
                 </Section>
