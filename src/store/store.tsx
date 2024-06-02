@@ -7,10 +7,12 @@ interface StoreValues {
     email?: string;
 
     recordId?: string;
+    startWorkTime?: number;
     
     setToken: (token: string) => void;
     setEmail: (email: string) => void;
     setUsername: (username: string) => void;
+    setStartWorkTime: (startWorkTime?: number) => void;
 
     setRecordId: (workId?: string) => void;
 
@@ -27,6 +29,7 @@ export const useStore = create(
             setUsername: (username) => set({ username }),
             setEmail: (email) => set({ email }),
             setRecordId: (recordId) => set({ recordId }),
+            setStartWorkTime: (startWorkTime) => set({ startWorkTime }),
 
             isAuth: () => !!get().token,
             isStaff: () => get().email === 'admin@admin.com',

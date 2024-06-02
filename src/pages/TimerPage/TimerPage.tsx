@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from "react"
-import { Section, Select, Button, Placeholder, Textarea } from '@telegram-apps/telegram-ui';
+import { Section, Select, Button, Placeholder, Textarea, LargeTitle } from '@telegram-apps/telegram-ui';
 import { useStore } from "@/store/store";
 import { useGuard } from "@/utils/hooks/useGuard";
 import axios from "axios";
@@ -11,6 +11,12 @@ interface Project {
     name: string;
     description: string;
 }
+
+function convertNumber(num: number) {
+    return num.toString().padStart(2, '0');
+}
+
+const EMPTY_TIMER = '--:--:--';
 
 
 export const TimerPage: FC = () => {
@@ -38,6 +44,28 @@ export const TimerPage: FC = () => {
         getProjects();
     }, []);
 
+    const startWorkTime = useStore(state => state.startWorkTime);
+    const setStartWorkTime = useStore(state => state.setStartWorkTime);
+    const [timer, setTimer] = useState<string>(EMPTY_TIMER);
+
+    useEffect(() => {
+        if (!recordId) {
+            return;
+        }
+        const interval = setInterval(() => {
+            const time = startWorkTime ? Date.now() - startWorkTime : 0;
+            // console.log(time);
+            const hours = Math.floor((time / (1000 * 60 * 60)) % 24);
+            const minutes = Math.floor((time / 1000 / 60) % 60);
+            const seconds = Math.floor((time / 1000) % 60);
+            setTimer(`${convertNumber(hours)}:${convertNumber(minutes)}:${convertNumber(seconds)}`)
+        }, 1000)
+
+        return () => {
+            clearInterval(interval)
+        }
+    }, [recordId])
+
 
     useGuard();
     async function startWork() {
@@ -46,11 +74,11 @@ export const TimerPage: FC = () => {
             console.log(projects);
             const response = await axios.post(
                 `${BACKEND_ORIGIN}/start-work/`,
-                { project: project },
+                { project },
                 headers
             );
-            console.log(response.data);
             setRecordId(response.data.record);
+            setStartWorkTime(Date.now())
         } catch (error) {
             console.error(error);
         } finally {
@@ -67,6 +95,8 @@ export const TimerPage: FC = () => {
                 headers);
             setRecordId(undefined);
             setSummary('');
+            setStartWorkTime(undefined)
+            setTimer(EMPTY_TIMER);
         } catch (error) {
             console.error(error);
         } finally {
@@ -76,6 +106,13 @@ export const TimerPage: FC = () => {
 
     return (
         <Section header='You can pick a project and get to work'>
+            {recordId && (<Placeholder>
+                <LargeTitle
+                    weight="1"
+                >
+                    {timer}
+                </LargeTitle>
+            </Placeholder>)}
             {recordId
                 ? <Textarea
                     placeholder="summary"
