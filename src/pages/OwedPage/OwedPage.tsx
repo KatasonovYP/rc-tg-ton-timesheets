@@ -50,8 +50,8 @@ export const OwedPage: FC = () => {
         return (
             <div>
                 <Placeholder
-                    description="Add some at your profile"
-                    header="No employees"
+                    header="All the bills are paid!"
+                    description="New ones will arrive at the end of the sprint"
                 >
                     <img
                         alt="Telegram sticker"
