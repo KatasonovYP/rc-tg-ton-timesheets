@@ -12,7 +12,7 @@ export const IndexPage: FC = () => {
     <List>
       <Section
         header='Features'
-        footer='You can use these pages to learn more about features, provided by Telegram Mini Apps and other useful projects'
+        footer='app navigation'
       >
         <Link to='/ton-connect'>
           <Cell
@@ -25,17 +25,20 @@ export const IndexPage: FC = () => {
       </Section>
       <Section
         header='Application Launch Data'
-        footer='These pages help developer to learn more about current launch information'
+        footer='vidicode (c) 2024'
       >
         <Link to='/init-data'>
           <Cell subtitle='User data, chat information, technical data'>Init Data</Cell>
         </Link>
-        <Link to='/launch-params'>
+        <Link to='/auth/login'>
+          <Cell subtitle='timesheets login'>Auth</Cell>
+        </Link>
+        {/* <Link to='/launch-params'>
           <Cell subtitle='Platform identifier, Mini Apps version, etc.'>Launch Parameters</Cell>
         </Link>
         <Link to='/theme-params'>
           <Cell subtitle='Telegram application palette information'>Theme Parameters</Cell>
-        </Link>
+        </Link> */}
       </Section>
     </List>
   );
